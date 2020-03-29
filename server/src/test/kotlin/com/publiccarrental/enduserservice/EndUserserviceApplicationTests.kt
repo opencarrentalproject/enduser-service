@@ -1,10 +1,10 @@
-package com.publiccarrental.userservice
+package com.publiccarrental.enduserservice
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest
-class UserserviceApplicationTests {
+class EndUserserviceApplicationTests {
 
 	@Test
 	fun contextLoads() {
