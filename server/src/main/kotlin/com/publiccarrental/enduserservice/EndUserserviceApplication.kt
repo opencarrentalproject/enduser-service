@@ -1,4 +1,4 @@
-package com.publiccarrental.enduserservice
+package com.opencarrental.enduserservice
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class EndUserserviceApplication
 
 fun main(args: Array<String>) {
-	runApplication<EndUserserviceApplication>(*args)
+    runApplication<EndUserserviceApplication>(*args)
 }

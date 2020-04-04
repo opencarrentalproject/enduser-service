@@ -1,6 +1,6 @@
-package com.publiccarrental.enduserservice.repository
+package com.opencarrental.enduserservice.repository
 
-import com.publiccarrental.enduserservice.domain.EndUser
+import com.opencarrental.enduserservice.domain.EndUser
 import org.springframework.data.repository.CrudRepository
 import java.util.*
 

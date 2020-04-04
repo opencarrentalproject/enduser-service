@@ -1,8 +1,8 @@
-package com.publiccarrental.enduserservice.controller
+package com.opencarrental.enduserservice.controller
 
-import com.publiccarrental.enduserservice.api.EndUserEdit
-import com.publiccarrental.enduserservice.domain.EndUser
-import com.publiccarrental.enduserservice.repository.EndUserRepository
+import com.opencarrental.enduserservice.api.EndUserEdit
+import com.opencarrental.enduserservice.domain.EndUser
+import com.opencarrental.enduserservice.repository.EndUserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*

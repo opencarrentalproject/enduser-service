@@ -1,4 +1,4 @@
-package com.publiccarrental.enduserservice.api
+package com.opencarrental.enduserservice.api
 
 data class EndUserEdit(
         val firstName: String?,

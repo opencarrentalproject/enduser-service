@@ -1,4 +1,4 @@
-package com.publiccarrental.enduserservice.domain
+package com.opencarrental.enduserservice.domain
 
 import org.springframework.data.annotation.Id
 import java.time.LocalDateTime
@@ -12,7 +12,7 @@ data class EndUser(
         val firstName: String?,
         val lastName: String?,
         val email: String,
-        val verified: Boolean?=false,
+        val verified: Boolean? = false,
         val registeredTime: LocalDateTime,
         val loggedInTime: LocalDateTime
-        )
+)
