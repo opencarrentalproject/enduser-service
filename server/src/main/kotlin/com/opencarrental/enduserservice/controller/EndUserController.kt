@@ -7,23 +7,23 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
-import java.util.*
 
 @RestController
 @RequestMapping("/users")
 class EndUserController(val repository: EndUserRepository) {
 
     @GetMapping("")
-    fun listUsers() = repository.findAllOrderByLogin()
+    fun listUsers() = repository.findAllOrderByEmail()
 
     @GetMapping("/{userId}")
-    fun retrieveUser(@PathVariable userId: UUID) = repository.findById(userId)
+    fun retrieveUser(@PathVariable userId: String) = repository.findById(userId)
 
     @PostMapping("")
+    @ResponseStatus(HttpStatus.CREATED)
     fun createUser(@RequestBody endUser: EndUser) = repository.save(endUser)
 
     @PatchMapping("/{userId}")
-    fun updateUser(@PathVariable userId: UUID, @RequestBody endEndUserEdit: EndUserEdit) {
+    fun updateUser(@PathVariable userId: String, @RequestBody endEndUserEdit: EndUserEdit) {
         val persistedUser = repository.findByIdOrNull(userId)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
         val updatedUser = persistedUser.copy(firstName = endEndUserEdit.firstName
@@ -33,7 +33,7 @@ class EndUserController(val repository: EndUserRepository) {
     }
 
     @DeleteMapping("/{userId}")
-    fun deleteUser(@PathVariable userId: UUID) {
+    fun deleteUser(@PathVariable userId: String) {
         val persistedUser = repository.findByIdOrNull(userId)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
 

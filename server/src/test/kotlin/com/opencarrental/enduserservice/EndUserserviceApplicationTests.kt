@@ -1,13 +1,32 @@
 package com.opencarrental.enduserservice
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpStatus
 
-@SpringBootTest
-class EndUserserviceApplicationTests {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTemplate) : AbstractIntegrationTest() {
 
     @Test
-    fun contextLoads() {
+    fun `call create user must return sucess`() {
+
+        val request = HttpEntity<CreateUserRequest>(CreateUserRequest("12345",
+                "first", "last", "example@example.com"))
+        val response = restTemplate.postForEntity("/users", request, String::class.java)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
     }
 
+    internal data class CreateUserRequest(
+            val password: String,
+            val firstName: String?,
+            val lastName: String?,
+            val email: String
+    )
 }
+
+
