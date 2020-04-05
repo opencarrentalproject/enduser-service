@@ -1,11 +1,9 @@
 package com.opencarrental.enduserservice.repository
 
 import com.opencarrental.enduserservice.domain.EndUser
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.mongodb.repository.MongoRepository
 
-interface EndUserRepository : CrudRepository<EndUser, String> {
+interface EndUserRepository : MongoRepository<EndUser, String> {
 
     fun findByEmailAndPassword(email: String, password: String): EndUser?
-
-    fun findAllOrderByEmail(): Iterable<EndUser>
 }

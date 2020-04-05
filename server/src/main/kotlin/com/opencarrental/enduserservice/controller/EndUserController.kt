@@ -13,7 +13,7 @@ import org.springframework.web.server.ResponseStatusException
 class EndUserController(val repository: EndUserRepository) {
 
     @GetMapping("")
-    fun listUsers() = repository.findAllOrderByEmail()
+    fun listUsers(): MutableList<EndUser> = repository.findAll()
 
     @GetMapping("/{userId}")
     fun retrieveUser(@PathVariable userId: String) = repository.findById(userId)
