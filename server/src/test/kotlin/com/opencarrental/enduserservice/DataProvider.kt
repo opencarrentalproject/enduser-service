@@ -15,4 +15,8 @@ class DataProvider(@Autowired val repository: EndUserRepository) {
         repository.save(EndUser(password = "123456", firstName = "test2", lastName = "test2", email = "test2@example.com"))
         repository.save(EndUser(password = "123456", firstName = "test3", lastName = "test3", email = "test3@example.com"))
     }
+
+    fun createUser(firstName: String, lastName: String, email: String, password: String): EndUser =
+            repository.save(EndUser(firstName = firstName, lastName = lastName, email = email, password = password))
+
 }

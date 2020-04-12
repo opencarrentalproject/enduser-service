@@ -35,6 +35,7 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.testcontainers:testcontainers:1.13.0")
+    testImplementation("com.google.code.gson:gson:2.8.6")
 }
 
 tasks.withType<Test> {

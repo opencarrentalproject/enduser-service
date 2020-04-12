@@ -1,5 +1,7 @@
 package com.opencarrental.enduserservice
 
+import io.restassured.response.ResponseBodyExtractionOptions
+import io.restassured.specification.RequestSpecification
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ApplicationContextInitializer
@@ -26,4 +28,13 @@ abstract class AbstractIntegrationTest {
             ).applyTo(configurableApplicationContext.environment)
         }
     }
+}
+
+fun RequestSpecification.When(): RequestSpecification {
+    return this.`when`()
+}
+
+// allows response.to<Widget>() -> Widget instance
+inline fun <reified T> ResponseBodyExtractionOptions.to(): T {
+    return this.`as`(T::class.java)
 }

@@ -16,20 +16,21 @@ class EndUserController(val repository: EndUserRepository) {
     fun listUsers(): MutableList<EndUser> = repository.findAll()
 
     @GetMapping("/{userId}")
-    fun retrieveUser(@PathVariable userId: String) = repository.findById(userId)
+    fun retrieveUser(@PathVariable userId: String) = repository.findByIdOrNull(userId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     fun createUser(@RequestBody endUser: EndUser) = repository.save(endUser)
 
     @PatchMapping("/{userId}")
-    fun updateUser(@PathVariable userId: String, @RequestBody endEndUserEdit: EndUserEdit) {
+    fun updateUser(@PathVariable userId: String, @RequestBody endEndUserEdit: EndUserEdit): EndUser {
         val persistedUser = repository.findByIdOrNull(userId)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
         val updatedUser = persistedUser.copy(firstName = endEndUserEdit.firstName
                 ?: persistedUser.firstName, lastName = endEndUserEdit.lastName
                 ?: persistedUser.lastName, email = endEndUserEdit.email ?: persistedUser.email)
-        repository.save(updatedUser)
+        return repository.save(updatedUser)
     }
 
     @DeleteMapping("/{userId}")
