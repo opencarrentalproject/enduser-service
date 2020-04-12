@@ -42,10 +42,11 @@ class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTempla
     fun `request to list users must return list of users`() {
 
         dataProvider.createUsers()
-        val response = restTemplate.getForEntity("/users", Array<EndUserResource>::class.java)
+        val response = restTemplate
+                .getForEntity("/users", EndUserListResource::class.java)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body).extracting("firstName").contains("test1", "test2", "test3")
+        assertThat(response.body?._embedded?.endUserResourceList).extracting("firstName").contains("test1", "test2", "test3")
     }
 
     @Test
@@ -97,6 +98,15 @@ class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTempla
             val lastName: String
     )
 
+    internal data class EndUserListResource(
+            val _embedded: EmbeddedList,
+            val _links: Links
+    )
+
+    internal data class EmbeddedList(
+            val endUserResourceList: Array<EndUserResource>
+    )
+
     internal data class EndUserResource(
             val id: String,
             val firstName: String,
@@ -104,7 +114,16 @@ class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTempla
             val email: String,
             val verified: Boolean = false,
             val registeredTime: LocalDateTime,
-            val loggedInTime: LocalDateTime? = null
+            val loggedInTime: LocalDateTime? = null,
+            val _links: Links? = null
+    )
+
+    internal data class Links(
+            val self: Link
+    )
+
+    internal data class Link(
+            val href: String
     )
 }
 

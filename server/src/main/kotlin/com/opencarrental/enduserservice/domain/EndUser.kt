@@ -12,7 +12,7 @@ data class EndUser(
         val firstName: String,
         val lastName: String,
         val email: String,
-        val verified: Boolean? = false,
-        val registeredTime: LocalDateTime? = LocalDateTime.now(),
+        val verified: Boolean = false,
+        val registeredTime: LocalDateTime = LocalDateTime.now(),
         val loggedInTime: LocalDateTime? = null
 )
