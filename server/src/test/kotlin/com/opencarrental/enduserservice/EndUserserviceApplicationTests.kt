@@ -36,6 +36,7 @@ class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTempla
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.id).isNotNull()
         assertThat(response.body?.firstName).isEqualTo("first")
+        assertThat(response.body?._links).isNotNull()
     }
 
     @Test
@@ -71,6 +72,7 @@ class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTempla
         assertThat(response).extracting("firstName").isEqualTo("first")
         assertThat(response).extracting("lastName").isEqualTo("last")
         assertThat(response).extracting("email").isEqualTo("testUser1@example.com")
+        assertThat(response).extracting("_links").isNotNull()
     }
 
     @Test

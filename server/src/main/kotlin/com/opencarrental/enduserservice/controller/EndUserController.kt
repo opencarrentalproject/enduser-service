@@ -41,16 +41,20 @@ class EndUserController(val repository: EndUserRepository) {
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
-    fun createUser(@RequestBody endUser: EndUser) = repository.save(endUser)
+    fun createUser(@RequestBody endUser: EndUser): EndUserResource {
+        val result = repository.save(endUser)
+        return mapToResource(result)
+    }
 
     @PatchMapping("/{userId}")
-    fun updateUser(@PathVariable userId: String, @RequestBody endEndUserEdit: EndUserEdit): EndUser {
+    fun updateUser(@PathVariable userId: String, @RequestBody endEndUserEdit: EndUserEdit): EndUserResource {
         val persistedUser = repository.findByIdOrNull(userId)
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
         val updatedUser = persistedUser.copy(firstName = endEndUserEdit.firstName
                 ?: persistedUser.firstName, lastName = endEndUserEdit.lastName
                 ?: persistedUser.lastName, email = endEndUserEdit.email ?: persistedUser.email)
-        return repository.save(updatedUser)
+        val result = repository.save(updatedUser)
+        return mapToResource(result)
     }
 
     @DeleteMapping("/{userId}")
@@ -59,5 +63,14 @@ class EndUserController(val repository: EndUserRepository) {
                 ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
 
         repository.delete(persistedUser)
+    }
+
+    private fun mapToResource(endUser: EndUser): EndUserResource {
+        val endUserResource: EndUserResource = EndUserResource(
+                id = endUser.id!!, firstName = endUser.firstName, lastName = endUser.lastName, email = endUser.email,
+                registeredTime = endUser.registeredTime, loggedInTime = endUser.loggedInTime, verified = endUser.verified)
+        val selfLink: Link = linkTo(EndUserController::class.java).slash(endUserResource.id).withSelfRel()
+        endUserResource.add(selfLink)
+        return endUserResource
     }
 }
