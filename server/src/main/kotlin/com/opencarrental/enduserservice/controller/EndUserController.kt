@@ -3,8 +3,7 @@ package com.opencarrental.enduserservice.controller
 import com.opencarrental.enduserservice.api.EndUserEdit
 import com.opencarrental.enduserservice.api.EndUserResource
 import com.opencarrental.enduserservice.domain.EndUser
-import com.opencarrental.enduserservice.repository.EndUserRepository
-import org.springframework.data.repository.findByIdOrNull
+import com.opencarrental.enduserservice.service.EndUserService
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.Link
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
@@ -15,11 +14,11 @@ import java.util.stream.Collectors
 
 @RestController
 @RequestMapping("/users")
-class EndUserController(val repository: EndUserRepository) {
+class EndUserController(val service: EndUserService) {
 
     @GetMapping("", produces = ["application/hal+json"])
     fun listUsers(): CollectionModel<EndUserResource> {
-        val users = repository.findAll()
+        val users = service.list()
         val result = users.stream()
                 .map {
 
@@ -36,33 +35,24 @@ class EndUserController(val repository: EndUserRepository) {
 
 
     @GetMapping("/{userId}")
-    fun retrieveUser(@PathVariable userId: String) = repository.findByIdOrNull(userId)
+    fun retrieveUser(@PathVariable userId: String) = service.retrieve(userId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
     fun createUser(@RequestBody endUser: EndUser): EndUserResource {
-        val result = repository.save(endUser)
+        val result = service.create(endUser)
         return mapToResource(result)
     }
 
     @PatchMapping("/{userId}")
-    fun updateUser(@PathVariable userId: String, @RequestBody endEndUserEdit: EndUserEdit): EndUserResource {
-        val persistedUser = repository.findByIdOrNull(userId)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
-        val updatedUser = persistedUser.copy(firstName = endEndUserEdit.firstName
-                ?: persistedUser.firstName, lastName = endEndUserEdit.lastName
-                ?: persistedUser.lastName, email = endEndUserEdit.email ?: persistedUser.email)
-        val result = repository.save(updatedUser)
-        return mapToResource(result)
+    fun updateUser(@PathVariable userId: String, @RequestBody endUserEdit: EndUserEdit): EndUserResource {
+        return mapToResource(service.update(userId, endUserEdit))
     }
 
     @DeleteMapping("/{userId}")
     fun deleteUser(@PathVariable userId: String) {
-        val persistedUser = repository.findByIdOrNull(userId)
-                ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
-
-        repository.delete(persistedUser)
+        service.delete(userId)
     }
 
     private fun mapToResource(endUser: EndUser): EndUserResource {
