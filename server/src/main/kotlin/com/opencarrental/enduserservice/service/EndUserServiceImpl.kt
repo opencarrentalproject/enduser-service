@@ -2,6 +2,8 @@ package com.opencarrental.enduserservice.service
 
 import com.opencarrental.enduserservice.api.EndUserEdit
 import com.opencarrental.enduserservice.domain.EndUser
+import com.opencarrental.enduserservice.exception.ErrorDetail
+import com.opencarrental.enduserservice.exception.InvalidEndUserException
 import com.opencarrental.enduserservice.repository.EndUserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
@@ -9,9 +11,15 @@ import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 
 @Service
-class EndUserServiceImpl(val repository: EndUserRepository) : EndUserService {
+class EndUserServiceImpl(val repository: EndUserRepository, val validationService: EndUserValidationService) : EndUserService {
 
     override fun create(endUser: EndUser): EndUser {
+        val validationErrors = validationService.validateUser(endUser).errors
+        if (validationErrors.isNotEmpty()) {
+            throw InvalidEndUserException(validationErrors.map {
+                ErrorDetail(it.dataPath, it.message)
+            })
+        }
         return repository.save(endUser)
     }
 

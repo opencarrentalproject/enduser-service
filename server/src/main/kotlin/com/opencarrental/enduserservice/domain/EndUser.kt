@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 data class EndUser(
         @Id
         val id: String? = null,
-        private val password: String,
+        val password: String,
         val firstName: String,
         val lastName: String,
         val email: String,

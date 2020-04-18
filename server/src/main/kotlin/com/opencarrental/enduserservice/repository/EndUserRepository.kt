@@ -6,4 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository
 interface EndUserRepository : MongoRepository<EndUser, String> {
 
     fun findByEmailAndPassword(email: String, password: String): EndUser?
+
+    fun findByEmail(email: String): EndUser?
 }

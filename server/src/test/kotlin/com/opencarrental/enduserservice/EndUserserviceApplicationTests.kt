@@ -13,13 +13,14 @@ import org.springframework.http.HttpStatus
 import java.time.LocalDateTime
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTemplate, @Autowired val dataProvider: DataProvider) : AbstractIntegrationTest() {
+class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, @Autowired restTemplate: TestRestTemplate) : AbstractIntegrationTest(restTemplate) {
 
     val gson = Gson()
     val headers = HttpHeaders()
 
     @BeforeEach
-    fun setup() {
+    override fun setup() {
+        super.setup()
         val map = mapOf(
                 "Content-Type" to listOf<String>("application/json")
         )
@@ -29,7 +30,7 @@ class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTempla
     @Test
     fun `request to create user must return success`() {
 
-        val request = HttpEntity<CreateUserRequest>(CreateUserRequest("12345",
+        val request = HttpEntity<CreateUserRequest>(CreateUserRequest("12345678",
                 "first", "last", "example@example.com"))
         val response = restTemplate.postForEntity("/users", request, EndUserResource::class.java)
 
@@ -37,6 +38,17 @@ class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTempla
         assertThat(response.body?.id).isNotNull()
         assertThat(response.body?.firstName).isEqualTo("first")
         assertThat(response.body?._links).isNotNull()
+    }
+
+    @Test
+    fun `request to create user with invalid password length`() {
+        val request = HttpEntity<CreateUserRequest>(CreateUserRequest("12345",
+                "first", "last", "example@example.com"))
+        val response = restTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.size).isEqualTo(1)
+        assertThat(response.body?.get(0)?.field).isEqualTo(".password")
     }
 
     @Test
@@ -118,6 +130,11 @@ class EndUserserviceApplicationTests(@Autowired val restTemplate: TestRestTempla
             val registeredTime: LocalDateTime,
             val loggedInTime: LocalDateTime? = null,
             val _links: Links? = null
+    )
+
+    internal data class ErrorDetail(
+            val field: String,
+            val message: String
     )
 
     internal data class Links(
