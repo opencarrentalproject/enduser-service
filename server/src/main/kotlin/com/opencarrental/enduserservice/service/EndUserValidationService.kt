@@ -5,5 +5,7 @@ import io.konform.validation.ValidationResult
 
 interface EndUserValidationService {
 
+    fun validateUniqueEndUser(endUser: EndUser): ValidationResult<EndUser>
+
     fun validateUser(endUser: EndUser): ValidationResult<EndUser>
 }

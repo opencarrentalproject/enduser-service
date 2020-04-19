@@ -3,13 +3,13 @@ package com.opencarrental.enduserservice.controller
 import com.opencarrental.enduserservice.api.EndUserEdit
 import com.opencarrental.enduserservice.api.EndUserResource
 import com.opencarrental.enduserservice.domain.EndUser
+import com.opencarrental.enduserservice.exception.EndUserNotFoundException
 import com.opencarrental.enduserservice.service.EndUserService
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.Link
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.server.ResponseStatusException
 import java.util.stream.Collectors
 
 @RestController
@@ -36,7 +36,7 @@ class EndUserController(val service: EndUserService) {
 
     @GetMapping("/{userId}")
     fun retrieveUser(@PathVariable userId: String) = service.retrieve(userId)
-            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "User does not exists")
+            ?: throw EndUserNotFoundException("User does not exists")
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)

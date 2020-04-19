@@ -52,6 +52,41 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     }
 
     @Test
+    fun `request to create user with invalid email`() {
+        val request = HttpEntity<CreateUserRequest>(CreateUserRequest("12345678",
+                "first", "last", "example.com"))
+        val response = restTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.size).isEqualTo(1)
+        assertThat(response.body?.get(0)?.field).isEqualTo(".email")
+    }
+
+    @Test
+    fun `request to create user with missing email and password`() {
+        val request = HttpEntity<CreateUserRequest>(CreateUserRequest("",
+                "first", "last", ""))
+        val response = restTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(response.body?.size).isEqualTo(2)
+        assertThat(response.body).extracting("field").contains(".email", ".password")
+    }
+
+    @Test
+    fun `request to create user with existing email`() {
+
+        dataProvider.createUser("testUser1", "tester", "testUser1@example.com", "12345678")
+        val request = HttpEntity<CreateUserRequest>(CreateUserRequest("abcdefgh",
+                "first", "last", "testUser1@example.com"))
+        val response = restTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
+        assertThat(response.body?.size).isEqualTo(1)
+        assertThat(response.body?.get(0)?.message).isEqualTo("email must be unique")
+    }
+
+    @Test
     fun `request to list users must return list of users`() {
 
         dataProvider.createUsers()
@@ -75,7 +110,7 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
 
     @Test
     fun `request to update first and last name must return updated resource`() {
-        val persistedUser = dataProvider.createUser("testUser1", "tester", "testUser1@example.com", "12345")
+        val persistedUser = dataProvider.createUser("testUser1", "tester", "testUser1@example.com", "12345678")
 
         val request = HttpEntity<String>(gson.toJson(UpdateUserRequest(
                 firstName = "first", lastName = "last")), headers)

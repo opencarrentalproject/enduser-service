@@ -7,5 +7,5 @@ interface EndUserRepository : MongoRepository<EndUser, String> {
 
     fun findByEmailAndPassword(email: String, password: String): EndUser?
 
-    fun findByEmail(email: String): EndUser?
+    fun findFirstByEmail(email: String): EndUser?
 }

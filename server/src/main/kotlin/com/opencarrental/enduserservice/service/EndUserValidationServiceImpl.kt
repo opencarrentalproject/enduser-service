@@ -13,12 +13,17 @@ import org.springframework.stereotype.Service
 class EndUserValidationServiceImpl(val repository: EndUserRepository) : EndUserValidationService {
 
     private val validate = Validation<EndUser> {
-        hasUniqueEmail()
         EndUser::password.has.minLength(8)
         EndUser::email required {
             matches(".+@.+".toRegex())
         }
     }
+
+    private val validateUniqueEmail = Validation<EndUser> {
+        hasUniqueEmail()
+    }
+
+    override fun validateUniqueEndUser(endUser: EndUser): ValidationResult<EndUser> = validateUniqueEmail(endUser)
 
     override fun validateUser(endUser: EndUser): ValidationResult<EndUser> = validate(endUser)
 
@@ -28,6 +33,6 @@ class EndUserValidationServiceImpl(val repository: EndUserRepository) : EndUserV
 
     private fun ValidationBuilder<EndUser>.hasUniqueEmail() =
             addConstraint("email must be unique") {
-                repository.findByEmail(it.email)?.let { false } ?: true
+                repository.findFirstByEmail(it.email)?.let { false } ?: true
             }
 }
