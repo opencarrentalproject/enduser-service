@@ -3,4 +3,4 @@ Component responsible for managing users, providing registration and login. Supp
 
 ## Authentication Flow
 
-![Alt](EndUserServiceAuth.svg)
+![Alt](images/EndUserServiceAuth.svg)

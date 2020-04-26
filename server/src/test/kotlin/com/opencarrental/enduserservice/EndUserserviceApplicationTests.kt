@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import java.time.LocalDateTime
 
@@ -109,17 +110,26 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     }
 
     @Test
-    fun `request to update first and last name must return updated resource`() {
+    fun `request to update first-,  last name and email must return updated resource`() {
         val persistedUser = dataProvider.createUser("testUser1", "tester", "testUser1@example.com", "12345678")
 
         val request = HttpEntity<String>(gson.toJson(UpdateUserRequest(
-                firstName = "first", lastName = "last")), headers)
+                firstName = "first", lastName = "last", email = "test.User1@example.com")), headers)
         val response = restTemplate.patchForObject("/users/${persistedUser.id}", request, EndUserResource::class.java)
 
         assertThat(response).extracting("firstName").isEqualTo("first")
         assertThat(response).extracting("lastName").isEqualTo("last")
-        assertThat(response).extracting("email").isEqualTo("testUser1@example.com")
+        assertThat(response).extracting("email").isEqualTo("test.User1@example.com")
         assertThat(response).extracting("_links").isNotNull()
+    }
+
+    @Test
+    fun `request to update a non existing user must return not found`() {
+        val request = HttpEntity<String>(gson.toJson(UpdateUserRequest(
+                firstName = "first", lastName = "last", email = "test.User1@example.com")), headers)
+        val response = restTemplate.exchange("/users/1234", HttpMethod.PATCH, request, String::class.java)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body).isEqualTo("User does not exist")
     }
 
     @Test
@@ -135,6 +145,13 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
 
     }
 
+    @Test
+    fun `request to delete a non exiting user must return not found`() {
+        val response = restTemplate.exchange("/users/1234", HttpMethod.DELETE, null, String::class.java)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
+        assertThat(response.body).isEqualTo("User does not exist")
+    }
+
     internal data class CreateUserRequest(
             val password: String,
             val firstName: String,
@@ -144,7 +161,8 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
 
     internal data class UpdateUserRequest(
             val firstName: String,
-            val lastName: String
+            val lastName: String,
+            val email: String
     )
 
     internal data class EndUserListResource(
