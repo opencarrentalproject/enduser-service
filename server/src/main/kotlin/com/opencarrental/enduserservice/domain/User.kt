@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDateTime
 
 @Document
-data class EndUser(
+data class User(
         @Id
         val id: String? = null,
         val password: String,

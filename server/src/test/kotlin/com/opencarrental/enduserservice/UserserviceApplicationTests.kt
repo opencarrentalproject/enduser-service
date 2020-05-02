@@ -1,6 +1,7 @@
 package com.opencarrental.enduserservice
 
 import com.google.gson.Gson
+import org.apache.http.entity.ContentType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -11,10 +12,11 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
+import org.springframework.http.client.ClientHttpRequestInterceptor
 import java.time.LocalDateTime
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, @Autowired restTemplate: TestRestTemplate) : AbstractIntegrationTest(restTemplate) {
+class UserserviceApplicationTests(@Autowired val dataProvider: DataProvider, @Autowired restTemplate: TestRestTemplate) : AbstractIntegrationTest(restTemplate) {
 
     val gson = Gson()
     val headers = HttpHeaders()
@@ -23,9 +25,16 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     override fun setup() {
         super.setup()
         val map = mapOf(
-                "Content-Type" to listOf<String>("application/json")
+                "Content-Type" to listOf<String>("application/json"),
+                "Authorization" to listOf<String>("""Bearer $token""")
         )
         headers.putAll(map)
+        testRestTemplate.restTemplate.interceptors.add(ClientHttpRequestInterceptor { request, body, execution ->
+            request.headers.set("Authorization", """Bearer $token""");
+            request.headers.set("Content-Type", """${ContentType.APPLICATION_JSON.mimeType}""");
+            execution.execute(request, body)
+        }
+        )
     }
 
     @Test
@@ -33,7 +42,7 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
 
         val request = HttpEntity<CreateUserRequest>(CreateUserRequest("12345678",
                 "first", "last", "example@example.com"))
-        val response = restTemplate.postForEntity("/users", request, EndUserResource::class.java)
+        val response = testRestTemplate.postForEntity("/users", request, UserResource::class.java)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CREATED)
         assertThat(response.body?.id).isNotNull()
@@ -45,7 +54,7 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     fun `request to create user with invalid password length`() {
         val request = HttpEntity<CreateUserRequest>(CreateUserRequest("12345",
                 "first", "last", "example@example.com"))
-        val response = restTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
+        val response = testRestTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.size).isEqualTo(1)
@@ -56,7 +65,7 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     fun `request to create user with invalid email`() {
         val request = HttpEntity<CreateUserRequest>(CreateUserRequest("12345678",
                 "first", "last", "example.com"))
-        val response = restTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
+        val response = testRestTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.size).isEqualTo(1)
@@ -67,7 +76,7 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     fun `request to create user with missing email and password`() {
         val request = HttpEntity<CreateUserRequest>(CreateUserRequest("",
                 "first", "last", ""))
-        val response = restTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
+        val response = testRestTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.BAD_REQUEST)
         assertThat(response.body?.size).isEqualTo(2)
@@ -80,7 +89,7 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
         dataProvider.createUser("testUser1", "tester", "testUser1@example.com", "12345678")
         val request = HttpEntity<CreateUserRequest>(CreateUserRequest("abcdefgh",
                 "first", "last", "testUser1@example.com"))
-        val response = restTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
+        val response = testRestTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java, headers)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
         assertThat(response.body?.size).isEqualTo(1)
@@ -91,18 +100,18 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     fun `request to list users must return list of users`() {
 
         dataProvider.createUsers()
-        val response = restTemplate
+        val response = testRestTemplate
                 .getForEntity("/users", EndUserListResource::class.java)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body?._embedded?.endUserResourceList).extracting("firstName").contains("test1", "test2", "test3")
+        assertThat(response.body?._embedded?.userResourceList).extracting("firstName").contains("test1", "test2", "test3")
     }
 
     @Test
     fun `request to retrieve on user must return the correct user `() {
         val expectedUser = dataProvider.createUser("testUser1", "tester", "testUser1@example.com", "12345")
 
-        val response = restTemplate.getForEntity("/users/${expectedUser.id}", EndUserResource::class.java)
+        val response = testRestTemplate.getForEntity("/users/${expectedUser.id}", UserResource::class.java)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body).extracting("firstName").isEqualTo("testUser1")
@@ -114,8 +123,8 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
         val persistedUser = dataProvider.createUser("testUser1", "tester", "testUser1@example.com", "12345678")
 
         val request = HttpEntity<String>(gson.toJson(UpdateUserRequest(
-                firstName = "first", lastName = "last", email = "test.User1@example.com")), headers)
-        val response = restTemplate.patchForObject("/users/${persistedUser.id}", request, EndUserResource::class.java)
+                firstName = "first", lastName = "last", email = "test.User1@example.com")))
+        val response = testRestTemplate.patchForObject("/users/${persistedUser.id}", request, UserResource::class.java)
 
         assertThat(response).extracting("firstName").isEqualTo("first")
         assertThat(response).extracting("lastName").isEqualTo("last")
@@ -126,8 +135,8 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     @Test
     fun `request to update a non existing user must return not found`() {
         val request = HttpEntity<String>(gson.toJson(UpdateUserRequest(
-                firstName = "first", lastName = "last", email = "test.User1@example.com")), headers)
-        val response = restTemplate.exchange("/users/1234", HttpMethod.PATCH, request, String::class.java)
+                firstName = "first", lastName = "last", email = "test.User1@example.com")))
+        val response = testRestTemplate.exchange("/users/1234", HttpMethod.PATCH, request, String::class.java)
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         assertThat(response.body).isEqualTo("User does not exist")
     }
@@ -136,10 +145,9 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     fun `request to delete a resource must return success`() {
         val persistedUser = dataProvider.createUser("testUser1", "tester", "testUser1@example.com", "12345")
 
-        restTemplate
-                .delete("/users/${persistedUser.id}")
+        testRestTemplate.delete("/users/${persistedUser.id}")
 
-        val response = restTemplate.getForEntity("/users/${persistedUser.id}", String::class.java)
+        val response = testRestTemplate.getForEntity("/users/${persistedUser.id}", String::class.java)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
 
@@ -147,7 +155,7 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
 
     @Test
     fun `request to delete a non exiting user must return not found`() {
-        val response = restTemplate.exchange("/users/1234", HttpMethod.DELETE, null, String::class.java)
+        val response = testRestTemplate.exchange("/users/1234", HttpMethod.DELETE, null, String::class.java)
         assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND)
         assertThat(response.body).isEqualTo("User does not exist")
     }
@@ -171,10 +179,10 @@ class EndUserserviceApplicationTests(@Autowired val dataProvider: DataProvider, 
     )
 
     internal data class EmbeddedList(
-            val endUserResourceList: Array<EndUserResource>
+            val userResourceList: Array<UserResource>
     )
 
-    internal data class EndUserResource(
+    internal data class UserResource(
             val id: String,
             val firstName: String,
             val lastName: String,

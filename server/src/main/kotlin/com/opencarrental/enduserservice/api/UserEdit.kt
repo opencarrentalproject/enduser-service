@@ -1,6 +1,6 @@
 package com.opencarrental.enduserservice.api
 
-data class EndUserEdit(
+data class UserEdit(
         val firstName: String?,
         val lastName: String?,
         val email: String?

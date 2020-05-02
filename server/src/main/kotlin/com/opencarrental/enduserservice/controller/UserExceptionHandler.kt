@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 
 @RestControllerAdvice
-class EndUserExceptionHandler : ResponseEntityExceptionHandler() {
+class UserExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(value = [InvalidEndUserException::class])
     protected fun handleInvalidData(
