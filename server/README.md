@@ -1,6 +1,6 @@
-## EndUser Service
+## Authorization Service
 
-User Service has two main reposibilities:
+Authorization Service has two main reposibilities:
 
 - Management of End Users
 - Authorizing clients accessing resource relevant to users

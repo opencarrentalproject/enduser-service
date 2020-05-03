@@ -1,7 +1,7 @@
-package com.opencarrental.enduserservice.service
+package com.opencarrental.authorizationservice.service
 
-import com.opencarrental.enduserservice.domain.User
-import com.opencarrental.enduserservice.repository.UserRepository
+import com.opencarrental.authorizationservice.domain.User
+import com.opencarrental.authorizationservice.repository.UserRepository
 import io.konform.validation.Validation
 import io.konform.validation.ValidationBuilder
 import io.konform.validation.ValidationResult

@@ -1,11 +1,11 @@
-package com.opencarrental.enduserservice.service
+package com.opencarrental.authorizationservice.service
 
-import com.opencarrental.enduserservice.api.UserEdit
-import com.opencarrental.enduserservice.exception.EndUserNotFoundException
-import com.opencarrental.enduserservice.exception.ErrorDetail
-import com.opencarrental.enduserservice.exception.InvalidEndUserException
-import com.opencarrental.enduserservice.exception.NotUniqueUserException
-import com.opencarrental.enduserservice.repository.UserRepository
+import com.opencarrental.authorizationservice.api.UserEdit
+import com.opencarrental.authorizationservice.exception.EndUserNotFoundException
+import com.opencarrental.authorizationservice.exception.ErrorDetail
+import com.opencarrental.authorizationservice.exception.InvalidEndUserException
+import com.opencarrental.authorizationservice.exception.NotUniqueUserException
+import com.opencarrental.authorizationservice.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
@@ -16,7 +16,7 @@ import java.util.*
 @Service("customUserDetailService")
 class UserServiceImpl(val repository: UserRepository, val validationService: UserValidationService) : UserService {
 
-    override fun create(user: com.opencarrental.enduserservice.domain.User): com.opencarrental.enduserservice.domain.User {
+    override fun create(user: com.opencarrental.authorizationservice.domain.User): com.opencarrental.authorizationservice.domain.User {
         validateEndUser(user)
         val validateUniqueUserError = validationService.validateUniqueEndUser(user).errors
         if (validateUniqueUserError.isNotEmpty()) {
@@ -27,11 +27,11 @@ class UserServiceImpl(val repository: UserRepository, val validationService: Use
         return repository.save(user)
     }
 
-    override fun retrieve(id: String): com.opencarrental.enduserservice.domain.User? {
+    override fun retrieve(id: String): com.opencarrental.authorizationservice.domain.User? {
         return repository.findByIdOrNull(id)
     }
 
-    override fun update(id: String, userEdit: UserEdit): com.opencarrental.enduserservice.domain.User {
+    override fun update(id: String, userEdit: UserEdit): com.opencarrental.authorizationservice.domain.User {
         val persistedUser = repository.findByIdOrNull(id)
                 ?: throw EndUserNotFoundException("User does not exist")
         val updatedUser = persistedUser.copy(firstName = userEdit.firstName
@@ -48,9 +48,9 @@ class UserServiceImpl(val repository: UserRepository, val validationService: Use
         repository.delete(persistedUser)
     }
 
-    override fun list(): List<com.opencarrental.enduserservice.domain.User> = repository.findAll()
+    override fun list(): List<com.opencarrental.authorizationservice.domain.User> = repository.findAll()
 
-    private fun validateEndUser(user: com.opencarrental.enduserservice.domain.User) {
+    private fun validateEndUser(user: com.opencarrental.authorizationservice.domain.User) {
         val validationErrors = validationService.validateUser(user).errors
         if (validationErrors.isNotEmpty()) {
             throw InvalidEndUserException(validationErrors.map {
@@ -66,5 +66,5 @@ class UserServiceImpl(val repository: UserRepository, val validationService: Use
         // TODO apply authority after implementing roles
         return User(endUser.email, endUser.password, Collections.emptyList())
     }
-    
+
 }

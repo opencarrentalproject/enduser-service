@@ -1,8 +1,8 @@
-package com.opencarrental.enduserservice.controller
+package com.opencarrental.authorizationservice.controller
 
-import com.opencarrental.enduserservice.exception.EndUserNotFoundException
-import com.opencarrental.enduserservice.exception.InvalidEndUserException
-import com.opencarrental.enduserservice.exception.NotUniqueUserException
+import com.opencarrental.authorizationservice.exception.EndUserNotFoundException
+import com.opencarrental.authorizationservice.exception.InvalidEndUserException
+import com.opencarrental.authorizationservice.exception.NotUniqueUserException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

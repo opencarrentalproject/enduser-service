@@ -1,7 +1,7 @@
-package com.opencarrental.enduserservice.service
+package com.opencarrental.authorizationservice.service
 
-import com.opencarrental.enduserservice.api.UserEdit
-import com.opencarrental.enduserservice.domain.User
+import com.opencarrental.authorizationservice.api.UserEdit
+import com.opencarrental.authorizationservice.domain.User
 import org.springframework.security.core.userdetails.UserDetailsService
 
 

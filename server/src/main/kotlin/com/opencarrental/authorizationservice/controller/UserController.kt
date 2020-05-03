@@ -1,10 +1,10 @@
-package com.opencarrental.enduserservice.controller
+package com.opencarrental.authorizationservice.controller
 
-import com.opencarrental.enduserservice.api.UserEdit
-import com.opencarrental.enduserservice.api.UserResource
-import com.opencarrental.enduserservice.domain.User
-import com.opencarrental.enduserservice.exception.EndUserNotFoundException
-import com.opencarrental.enduserservice.service.UserService
+import com.opencarrental.authorizationservice.api.UserEdit
+import com.opencarrental.authorizationservice.api.UserResource
+import com.opencarrental.authorizationservice.domain.User
+import com.opencarrental.authorizationservice.exception.EndUserNotFoundException
+import com.opencarrental.authorizationservice.service.UserService
 import org.springframework.hateoas.CollectionModel
 import org.springframework.hateoas.Link
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo

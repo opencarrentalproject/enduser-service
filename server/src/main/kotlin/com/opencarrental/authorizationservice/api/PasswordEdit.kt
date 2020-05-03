@@ -1,4 +1,4 @@
-package com.opencarrental.enduserservice.api
+package com.opencarrental.authorizationservice.api
 
 data class PasswordEdit(
         val currentPassword: String,

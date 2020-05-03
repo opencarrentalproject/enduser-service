@@ -1,7 +1,7 @@
-package com.opencarrental.enduserservice.controller
+package com.opencarrental.authorizationservice.controller
 
-import com.opencarrental.enduserservice.domain.User
-import com.opencarrental.enduserservice.service.UserService
+import com.opencarrental.authorizationservice.domain.User
+import com.opencarrental.authorizationservice.service.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 

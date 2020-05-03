@@ -1,4 +1,4 @@
-package com.opencarrental.enduserservice.exception
+package com.opencarrental.authorizationservice.exception
 
 data class ErrorDetail(val field: String, val message: String)
 

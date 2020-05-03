@@ -1,4 +1,4 @@
-package com.opencarrental.enduserservice.domain
+package com.opencarrental.authorizationservice.domain
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document

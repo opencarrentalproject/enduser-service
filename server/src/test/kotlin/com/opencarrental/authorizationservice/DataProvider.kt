@@ -1,7 +1,7 @@
-package com.opencarrental.enduserservice
+package com.opencarrental.authorizationservice
 
-import com.opencarrental.enduserservice.domain.User
-import com.opencarrental.enduserservice.repository.UserRepository
+import com.opencarrental.authorizationservice.domain.User
+import com.opencarrental.authorizationservice.repository.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional

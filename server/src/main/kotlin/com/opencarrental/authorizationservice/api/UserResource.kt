@@ -1,4 +1,4 @@
-package com.opencarrental.enduserservice.api
+package com.opencarrental.authorizationservice.api
 
 import org.springframework.hateoas.RepresentationModel
 import java.time.LocalDateTime

@@ -1,4 +1,4 @@
-package com.opencarrental.enduserservice
+package com.opencarrental.authorizationservice
 
 import org.apache.http.entity.ContentType
 import org.junit.jupiter.api.BeforeEach

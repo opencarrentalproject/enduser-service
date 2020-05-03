@@ -1,1 +1,1 @@
-rootProject.name = "enduserservice"
+rootProject.name = "authorizationservice"

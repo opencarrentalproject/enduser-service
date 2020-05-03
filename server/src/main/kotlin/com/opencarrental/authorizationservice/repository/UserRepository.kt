@@ -1,6 +1,6 @@
-package com.opencarrental.enduserservice.repository
+package com.opencarrental.authorizationservice.repository
 
-import com.opencarrental.enduserservice.domain.User
+import com.opencarrental.authorizationservice.domain.User
 import org.springframework.data.mongodb.repository.MongoRepository
 
 interface UserRepository : MongoRepository<User, String> {

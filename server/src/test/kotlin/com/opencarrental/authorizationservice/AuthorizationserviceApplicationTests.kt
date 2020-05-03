@@ -1,4 +1,4 @@
-package com.opencarrental.enduserservice
+package com.opencarrental.authorizationservice
 
 import com.google.gson.Gson
 import org.apache.http.entity.ContentType
@@ -16,7 +16,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor
 import java.time.LocalDateTime
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class UserserviceApplicationTests(@Autowired val dataProvider: DataProvider, @Autowired restTemplate: TestRestTemplate) : AbstractIntegrationTest(restTemplate) {
+class AuthorizationserviceApplicationTests(@Autowired val dataProvider: DataProvider, @Autowired restTemplate: TestRestTemplate) : AbstractIntegrationTest(restTemplate) {
 
     val gson = Gson()
     val headers = HttpHeaders()
