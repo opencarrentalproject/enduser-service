@@ -1,0 +1,17 @@
+spring:
+  data:
+    mongodb:
+      database: userdb
+
+admin:
+  client_id: admin_client
+  client_secret: admin
+
+service_client:
+  client_id: ui_client
+  acces_token_validity_period: 3600
+  refresh_token_validity_period: 86400
+
+
+
+

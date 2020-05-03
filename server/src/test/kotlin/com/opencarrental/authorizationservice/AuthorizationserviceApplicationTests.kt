@@ -19,19 +19,13 @@ import java.time.LocalDateTime
 class AuthorizationserviceApplicationTests(@Autowired val dataProvider: DataProvider, @Autowired restTemplate: TestRestTemplate) : AbstractIntegrationTest(restTemplate) {
 
     val gson = Gson()
-    val headers = HttpHeaders()
 
     @BeforeEach
     override fun setup() {
         super.setup()
-        val map = mapOf(
-                "Content-Type" to listOf<String>("application/json"),
-                "Authorization" to listOf<String>("""Bearer $token""")
-        )
-        headers.putAll(map)
         testRestTemplate.restTemplate.interceptors.add(ClientHttpRequestInterceptor { request, body, execution ->
             request.headers.set("Authorization", """Bearer $token""");
-            request.headers.set("Content-Type", """${ContentType.APPLICATION_JSON.mimeType}""");
+            request.headers.set("Content-Type", ContentType.APPLICATION_JSON.mimeType);
             execution.execute(request, body)
         }
         )
@@ -89,7 +83,7 @@ class AuthorizationserviceApplicationTests(@Autowired val dataProvider: DataProv
         dataProvider.createUser("testUser1", "tester", "testUser1@example.com", "12345678")
         val request = HttpEntity<CreateUserRequest>(CreateUserRequest("abcdefgh",
                 "first", "last", "testUser1@example.com"))
-        val response = testRestTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java, headers)
+        val response = testRestTemplate.postForEntity("/users", request, Array<ErrorDetail>::class.java)
 
         assertThat(response.statusCode).isEqualTo(HttpStatus.CONFLICT)
         assertThat(response.body?.size).isEqualTo(1)

@@ -1,8 +1,10 @@
 package com.opencarrental.authorizationservice.configuration
 
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.io.ClassPathResource
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -14,13 +16,19 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore
+import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory
 
 
 @Configuration
 @EnableAuthorizationServer
 class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
                                        val authenticationManager: AuthenticationManager,
-                                       @Qualifier("customUserDetailService") val userDetailsService: UserDetailsService) : AuthorizationServerConfigurerAdapter() {
+                                       @Qualifier("customUserDetailService") val userDetailsService: UserDetailsService,
+                                       @Value("\${admin.client_id}") val adminClientId: String,
+                                       @Value("\${admin.client_secret}") val adminClientSecret: String,
+                                       @Value("\${service_client.client_id}") val serviceClientId: String,
+                                       @Value("\${service_client.acces_token_validity_period}") val accessTokenValidity: Int,
+                                       @Value("\${service_client.refresh_token_validity_period}") val refreshTokenValidity: Int) : AuthorizationServerConfigurerAdapter() {
 
     override fun configure(security: AuthorizationServerSecurityConfigurer?) {
         security!!.allowFormAuthenticationForClients()
@@ -29,14 +37,14 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
 
     override fun configure(clients: ClientDetailsServiceConfigurer?) {
         clients!!.inMemory()
-                .withClient("ui_client") //TODO make it configurable
+                .withClient(serviceClientId)
                 .authorizedGrantTypes("password", "refresh_token")
                 .scopes("read")
-                .accessTokenValiditySeconds(3600)
-                .refreshTokenValiditySeconds(86400)
+                .accessTokenValiditySeconds(accessTokenValidity)
+                .refreshTokenValiditySeconds(refreshTokenValidity)
                 .and()
-                .withClient("admin_client")
-                .secret(passwordEncoder.encode("admin"))
+                .withClient(adminClientId)
+                .secret(passwordEncoder.encode(adminClientSecret))
                 .authorizedGrantTypes("client_credentials")
                 .scopes("all")
     }
@@ -49,7 +57,14 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
     }
 
     @Bean
-    fun jwtAccessTokenConverter() = JwtAccessTokenConverter()
+    fun jwtAccessTokenConverter(): JwtAccessTokenConverter {
+        val ksFile = ClassPathResource("auth-jwt.jks")
+        val ksFactory = KeyStoreKeyFactory(ksFile, "auth-pass".toCharArray())
+        val keyPair = ksFactory.getKeyPair("auth-jwt")
+        val converter = JwtAccessTokenConverter()
+        converter.setKeyPair(keyPair)
+        return converter
+    }
 
     @Bean
     fun tokenStore(): TokenStore = JwtTokenStore(jwtAccessTokenConverter())

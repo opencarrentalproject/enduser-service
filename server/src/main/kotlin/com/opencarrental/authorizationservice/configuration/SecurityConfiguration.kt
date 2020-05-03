@@ -19,5 +19,4 @@ class SecurityConfiguration : WebSecurityConfigurerAdapter() {
     override fun authenticationManagerBean(): AuthenticationManager? {
         return super.authenticationManagerBean()
     }
-
 }
