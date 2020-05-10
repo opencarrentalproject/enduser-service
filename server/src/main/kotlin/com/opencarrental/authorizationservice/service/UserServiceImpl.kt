@@ -9,12 +9,13 @@ import com.opencarrental.authorizationservice.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
 
 
 @Service("customUserDetailService")
-class UserServiceImpl(val repository: UserRepository, val validationService: UserValidationService) : UserService {
+class UserServiceImpl(val repository: UserRepository, val validationService: UserValidationService, val passwordEncoder: PasswordEncoder) : UserService {
 
     override fun create(user: com.opencarrental.authorizationservice.domain.User): com.opencarrental.authorizationservice.domain.User {
         validateEndUser(user)
@@ -24,7 +25,8 @@ class UserServiceImpl(val repository: UserRepository, val validationService: Use
                 ErrorDetail(it.dataPath, it.message)
             })
         }
-        return repository.save(user)
+        val userWithEncryptedPassword = user.copy(password = passwordEncoder.encode(user.password))
+        return repository.save(userWithEncryptedPassword)
     }
 
     override fun retrieve(id: String): com.opencarrental.authorizationservice.domain.User? {

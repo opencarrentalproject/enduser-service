@@ -11,8 +11,5 @@ class AuthenticationController(val service: UserService) {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    fun signUp(@RequestBody user: User) {
-        val result = service.create(user)
-        // TODO delivery link to login
-    }
+    fun signUp(@RequestBody user: User) = service.create(user)
 }
