@@ -5,16 +5,21 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
 import org.springframework.core.io.ClassPathResource
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter
-import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerEndpointsConfiguration
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
+import org.springframework.security.oauth2.provider.ClientDetailsService
+import org.springframework.security.oauth2.provider.approval.ApprovalStore
+import org.springframework.security.oauth2.provider.approval.ApprovalStoreUserApprovalHandler
+import org.springframework.security.oauth2.provider.approval.InMemoryApprovalStore
+import org.springframework.security.oauth2.provider.approval.UserApprovalHandler
+import org.springframework.security.oauth2.provider.request.DefaultOAuth2RequestFactory
 import org.springframework.security.oauth2.provider.token.TokenStore
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore
@@ -22,16 +27,17 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
 import java.security.KeyPair
 import java.security.interfaces.RSAPublicKey
 
-@Import(AuthorizationServerEndpointsConfiguration::class)
 @Configuration
+@EnableAuthorizationServer
 class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
                                        val authenticationManager: AuthenticationManager,
+                                       val clientDetailsService: ClientDetailsService,
                                        @Qualifier("customUserDetailService") val userDetailsService: UserDetailsService,
                                        @Value("\${admin.client_id}") val adminClientId: String,
                                        @Value("\${admin.client_secret}") val adminClientSecret: String,
-                                       @Value("\${service_client.client_id}") val serviceClientId: String,
-                                       @Value("\${service_client.acces_token_validity_period}") val accessTokenValidity: Int,
-                                       @Value("\${service_client.refresh_token_validity_period}") val refreshTokenValidity: Int) : AuthorizationServerConfigurerAdapter() {
+                                       @Value("\${public_client.client_id}") val public: String,
+                                       @Value("\${public_client.access_token_validity_period}") val accessTokenValidity: Int,
+                                       @Value("\${public_client.refresh_token_validity_period}") val refreshTokenValidity: Int) : AuthorizationServerConfigurerAdapter() {
 
     override fun configure(security: AuthorizationServerSecurityConfigurer?) {
         security!!.allowFormAuthenticationForClients()
@@ -40,8 +46,11 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
 
     override fun configure(clients: ClientDetailsServiceConfigurer?) {
         clients!!.inMemory()
-                .withClient(serviceClientId)
-                .authorizedGrantTypes("password", "refresh_token")
+                .withClient(public)
+                .secret("{noop}")
+                .redirectUris("http://localhost:8080/authorizationCode")
+                .authorizedGrantTypes("authorization_code")
+                .autoApprove(true)
                 .scopes("read")
                 .accessTokenValiditySeconds(accessTokenValidity)
                 .refreshTokenValiditySeconds(refreshTokenValidity)
@@ -56,6 +65,7 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
         endpoints!!.tokenStore(tokenStore())
                 .accessTokenConverter(jwtAccessTokenConverter())
                 .authenticationManager(authenticationManager)
+                .userApprovalHandler(userApprovalHandler())
                 .userDetailsService(userDetailsService);
     }
 
@@ -81,5 +91,19 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
         val publicKey = keyPair().public as RSAPublicKey
         val key: RSAKey = RSAKey.Builder(publicKey).build()
         return JWKSet(key)
+    }
+
+    @Bean
+    fun approvalStore(): ApprovalStore? {
+        return InMemoryApprovalStore()
+    }
+
+    @Bean
+    fun userApprovalHandler(): UserApprovalHandler? {
+        val userApprovalHandler = ApprovalStoreUserApprovalHandler()
+        userApprovalHandler.setApprovalStore(approvalStore())
+        userApprovalHandler.setClientDetailsService(clientDetailsService)
+        userApprovalHandler.setRequestFactory(DefaultOAuth2RequestFactory(clientDetailsService))
+        return userApprovalHandler
     }
 }

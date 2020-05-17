@@ -62,7 +62,7 @@ class UserServiceImpl(val repository: UserRepository, val validationService: Use
     }
 
     override fun loadUserByUsername(username: String?): UserDetails {
-        val email = username ?: throw IllegalArgumentException("Username not supplieds")
+        val email = username ?: throw IllegalArgumentException("Username not supplied")
         val endUser = repository.findFirstByEmail(email) ?: throw RuntimeException("User not found")
 
         // TODO apply authority after implementing roles

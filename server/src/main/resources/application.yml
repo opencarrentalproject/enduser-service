@@ -4,14 +4,16 @@ spring:
       database: userdb
       host: mongodb
       port: 27017
+  thymeleaf:
+    cache: false
 
 admin:
   client_id: admin_client
   client_secret: admin
 
-service_client:
+public_client:
   client_id: ui_client
-  acces_token_validity_period: 3600
+  access_token_validity_period: 3600
   refresh_token_validity_period: 86400
 
 
