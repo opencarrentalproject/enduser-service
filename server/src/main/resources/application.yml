@@ -1,18 +1,20 @@
+server:
+  port: 8090
 spring:
   data:
     mongodb:
       database: userdb
       host: mongodb
       port: 27017
-  thymeleaf:
-    cache: false
 
 admin:
-  client_id: admin_client
-  client_secret: admin
-
+  username: admin
+  password: admin
+  jwt_secret: jwtSecret
+  jwt_token_validity_period: 864000000
 public_client:
   client_id: ui_client
+  client_secret: ui_secret
   access_token_validity_period: 3600
   refresh_token_validity_period: 86400
 

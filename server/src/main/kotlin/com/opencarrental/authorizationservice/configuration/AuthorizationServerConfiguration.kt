@@ -33,9 +33,8 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
                                        val authenticationManager: AuthenticationManager,
                                        val clientDetailsService: ClientDetailsService,
                                        @Qualifier("customUserDetailService") val userDetailsService: UserDetailsService,
-                                       @Value("\${admin.client_id}") val adminClientId: String,
-                                       @Value("\${admin.client_secret}") val adminClientSecret: String,
                                        @Value("\${public_client.client_id}") val public: String,
+                                       @Value("\${public_client.client_secret}") val publicSecret: String,
                                        @Value("\${public_client.access_token_validity_period}") val accessTokenValidity: Int,
                                        @Value("\${public_client.refresh_token_validity_period}") val refreshTokenValidity: Int) : AuthorizationServerConfigurerAdapter() {
 
@@ -47,18 +46,13 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
     override fun configure(clients: ClientDetailsServiceConfigurer?) {
         clients!!.inMemory()
                 .withClient(public)
-                .secret("{noop}")
+                .secret(passwordEncoder.encode(publicSecret))
                 .redirectUris("http://localhost:8080/authorizationCode")
                 .authorizedGrantTypes("authorization_code")
                 .autoApprove(true)
                 .scopes("read")
                 .accessTokenValiditySeconds(accessTokenValidity)
                 .refreshTokenValiditySeconds(refreshTokenValidity)
-                .and()
-                .withClient(adminClientId)
-                .secret(passwordEncoder.encode(adminClientSecret))
-                .authorizedGrantTypes("client_credentials")
-                .scopes("all")
     }
 
     override fun configure(endpoints: AuthorizationServerEndpointsConfigurer?) {
