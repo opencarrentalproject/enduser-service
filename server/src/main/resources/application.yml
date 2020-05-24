@@ -1,3 +1,5 @@
+server:
+  port: 8090
 spring:
   data:
     mongodb:
@@ -6,12 +8,14 @@ spring:
       port: 27017
 
 admin:
-  client_id: admin_client
-  client_secret: admin
-
-service_client:
+  username: admin
+  password: admin
+  jwt_secret: jwtSecret
+  jwt_token_validity_period: 864000000
+public_client:
   client_id: ui_client
-  acces_token_validity_period: 3600
+  client_secret: ui_secret
+  access_token_validity_period: 3600
   refresh_token_validity_period: 86400
 
 
