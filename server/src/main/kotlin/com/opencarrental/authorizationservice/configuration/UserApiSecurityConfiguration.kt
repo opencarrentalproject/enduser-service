@@ -5,6 +5,7 @@ import com.opencarrental.authorizationservice.security.JWTAuthorizationFilter
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
@@ -17,6 +18,10 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.factory.PasswordEncoderFactories
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.provisioning.InMemoryUserDetailsManager
+import org.springframework.security.web.authentication.HttpStatusEntryPoint
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 
 
 @Configuration
@@ -27,15 +32,17 @@ class UserApiSecurityConfiguration(@Value("\${admin.username}") val adminUserNam
                                    @Value("\${admin.jwt_token_validity_period}") val jwtTokenValidity: Long) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity?) {
-        http!!.cors()
+        http!!.cors().configurationSource(corsConfigurationSource())
                     .and().csrf().disable()
                         .authorizeRequests()
-                        .antMatchers("/.well-known/jwks.json").permitAll()
+                        .antMatchers("/.well-known/jwks.json", "/login").permitAll()
                         .anyRequest().authenticated()
                      .and()
                         .addFilter(JWTAuthenticationFilter(authenticationManager(), jwtSecret, jwtTokenValidity))
                         .addFilter(JWTAuthorizationFilter(authenticationManager(), jwtSecret))
                         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .exceptionHandling().authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
     }
 
     @Bean
@@ -61,5 +68,16 @@ class UserApiSecurityConfiguration(@Value("\${admin.username}") val adminUserNam
                 .roles("ADMIN")
                 .build()
         return InMemoryUserDetailsManager(user)
+    }
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource? {
+        val configuration = CorsConfiguration()
+        configuration.allowedOrigins = listOf("http://localhost:8080")
+        configuration.allowedMethods = listOf("GET", "POST", "PATCH", "DELETE", "OPTIONS")
+        configuration.applyPermitDefaultValues();
+        val source = UrlBasedCorsConfigurationSource()
+        source.registerCorsConfiguration("/**", configuration)
+        return source
     }
 }

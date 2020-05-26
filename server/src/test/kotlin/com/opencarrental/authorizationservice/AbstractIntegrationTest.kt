@@ -40,7 +40,7 @@ abstract class AbstractIntegrationTest(@Autowired val testRestTemplate: TestRest
 
         val tokenRequest = HttpEntity<Credentials>(Credentials(adminUserName, adminPassword))
         val response = testRestTemplate.postForEntity("/login", tokenRequest, String::class.java)
-        token = response.headers["Authorization"]?.get(0)?.replace("Bearer ", "")
+        token = response.body
                 ?: throw RuntimeException("Failed to retrieve token.Check the security configuration")
     }
 

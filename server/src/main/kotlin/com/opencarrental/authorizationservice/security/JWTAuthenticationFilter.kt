@@ -4,8 +4,6 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm.HMAC512
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.opencarrental.authorizationservice.api.UserLogin
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -21,12 +19,9 @@ class JWTAuthenticationFilter(@Qualifier("adminAuthenticationManager") val admin
                               private val jwtSecret: String,
                               private val jwtTokenValidity: Long) : UsernamePasswordAuthenticationFilter() {
 
-    val log: Logger = LoggerFactory.getLogger(JWTAuthenticationFilter::class.java)
-
     override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication {
         val creds: UserLogin = jacksonObjectMapper()
                 .readValue(request!!.inputStream, UserLogin::class.java)
-        this.log.info("Here I am ${creds}")
         return adminAuthenticationManager.authenticate(UsernamePasswordAuthenticationToken(
                 creds.username, creds.password, emptyList()
         ))
@@ -37,6 +32,8 @@ class JWTAuthenticationFilter(@Qualifier("adminAuthenticationManager") val admin
                 .withSubject((authResult!!.principal as User).username)
                 .withExpiresAt(Date(System.currentTimeMillis() + jwtTokenValidity))
                 .sign(HMAC512(jwtSecret))
-        response!!.addHeader("Authorization", "Bearer $token")
+        val writer = response!!.writer
+        writer.write(token)
+        writer.flush()
     }
 }

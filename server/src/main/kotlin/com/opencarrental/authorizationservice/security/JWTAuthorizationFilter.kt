@@ -37,7 +37,6 @@ class JWTAuthorizationFilter(@Qualifier("adminAuthenticationManager") authManage
 
     private fun getAuthentication(request: HttpServletRequest): UsernamePasswordAuthenticationToken? {
         val token = request.getHeader("Authorization")
-        log.info("Parsing token $token")
         if (token != null) {
             // parse the token.
             val user: String = JWT.require(HMAC512(jwtSecret))
