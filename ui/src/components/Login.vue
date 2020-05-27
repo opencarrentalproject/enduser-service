@@ -38,8 +38,8 @@
                     AuthService.login(this.username, this.password)
                     .then(response => {
                         const token = response.data;
-                        localStorage.setItem('jwt', token);
-                        if (localStorage.getItem('jwt') != null){
+                        localStorage.setItem('token', token);
+                        if (localStorage.getItem('token') != null){
                             this.$emit('loggedIn');
                             if (this.$route.params.nextUrl != null) {
                                 this.$router.push(this.$route.params.nextUrl)

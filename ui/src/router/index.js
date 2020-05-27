@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Users from '../components/Users.vue'
 import Login from '../components/Login.vue'
 
 Vue.use(VueRouter)
@@ -9,7 +8,8 @@ const routes = [
     {
         path: '/',
         name: 'users',
-        component: Users,
+        alias: '/users',
+        component: () => import('../components/Users.vue'),
         meta: {
             requireAuth: true
         }
@@ -25,7 +25,7 @@ const routes = [
     {
         path: '/users/:id',
         name: 'user-details',
-        component: () => import(/* webpackChunkName: "about" */ '../components/UserDetail.vue'),
+        component: () => import('../components/UserDetail.vue'),
         meta: {
             requireAuth: true
         }
@@ -41,12 +41,13 @@ const routes = [
 ]
 
 const router = new VueRouter({
+    mode: "history",
     routes
 })
 
 router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requireAuth)) {
-        if (localStorage.getItem('jwt') == null) {
+        if (localStorage.getItem('token') == null) {
             next({
                 path: '/login',
                 params: { nextUrl: to.fullPath }
@@ -55,7 +56,7 @@ router.beforeEach((to, from, next) => {
             next()
         }
     } else if(to.matched.some(record => record.meta.anonymous)) {
-        if(localStorage.getItem('jwt') == null){
+        if(localStorage.getItem('token') == null){
             next()
         }
         else{
