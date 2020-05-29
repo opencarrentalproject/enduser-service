@@ -4,7 +4,7 @@ class AuthService {
 
     login(username, password) {
         const data = {username, password}
-        return http.post(`/login`, data);
+        return http.post(`/admin/login`, data);
     }
 }
 
