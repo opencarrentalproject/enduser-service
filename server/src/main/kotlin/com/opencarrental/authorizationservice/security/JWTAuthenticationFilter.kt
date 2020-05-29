@@ -17,7 +17,11 @@ import javax.servlet.http.HttpServletResponse
 
 class JWTAuthenticationFilter(@Qualifier("adminAuthenticationManager") val adminAuthenticationManager: AuthenticationManager,
                               private val jwtSecret: String,
-                              private val jwtTokenValidity: Long) : UsernamePasswordAuthenticationFilter() {
+                              private val jwtTokenValidity: Long, private val filterUrl: String) : UsernamePasswordAuthenticationFilter() {
+
+    init {
+        this.setFilterProcessesUrl(filterUrl)
+    }
 
     override fun attemptAuthentication(request: HttpServletRequest?, response: HttpServletResponse?): Authentication {
         val creds: UserLogin = jacksonObjectMapper()
