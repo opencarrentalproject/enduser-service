@@ -4,7 +4,6 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm.HMAC512
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.opencarrental.authorizationservice.api.UserLogin
-import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -15,7 +14,7 @@ import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class JWTAuthenticationFilter(@Qualifier("adminAuthenticationManager") val adminAuthenticationManager: AuthenticationManager,
+class JWTAuthenticationFilter(private val adminAuthenticationManager: AuthenticationManager,
                               private val jwtSecret: String,
                               private val jwtTokenValidity: Long, private val filterUrl: String) : UsernamePasswordAuthenticationFilter() {
 

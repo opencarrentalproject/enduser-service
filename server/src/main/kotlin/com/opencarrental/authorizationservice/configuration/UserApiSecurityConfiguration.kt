@@ -35,22 +35,28 @@ class UserApiSecurityConfiguration(@Autowired val passwordEncoder: PasswordEncod
                                    @Value("\${admin.jwt_token_validity_period}") val jwtTokenValidity: Long) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity?) {
-        http!!.antMatcher("/users/**").cors().configurationSource(corsConfigurationSource())
-                .and().csrf().disable()
+
+        http!!.cors().configurationSource(corsConfigurationSource())
+                .and()
+                .csrf().disable()
+                .requestMatchers()
+                .antMatchers("/.well-known/jwks.json", "/admin/login", "/users/**")
+                .and()
                 .authorizeRequests()
                 .antMatchers("/.well-known/jwks.json", "/admin/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilter(JWTAuthenticationFilter(authenticationManager(), jwtSecret, jwtTokenValidity, "/admin/login"))
-                .addFilter(JWTAuthorizationFilter(authenticationManager(), jwtSecret))
+                .addFilter(JWTAuthenticationFilter(authenticationManagerBean(), jwtSecret, jwtTokenValidity, "/admin/login"))
+                .addFilter(JWTAuthorizationFilter(authenticationManagerBean(), jwtSecret))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .exceptionHandling().authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
+
     }
 
     @Bean("adminAuthenticationManager")
     @Throws(Exception::class)
-    override fun authenticationManagerBean(): AuthenticationManager? {
+    override fun authenticationManagerBean(): AuthenticationManager {
         return super.authenticationManagerBean()
     }
 

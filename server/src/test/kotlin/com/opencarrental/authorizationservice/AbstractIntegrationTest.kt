@@ -42,6 +42,7 @@ abstract class AbstractIntegrationTest(@Autowired val testRestTemplate: TestRest
         val response = testRestTemplate.postForEntity("/admin/login", tokenRequest, String::class.java)
         token = response.body
                 ?: throw RuntimeException("Failed to retrieve token.Check the security configuration")
+        println(token)
     }
 
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
