@@ -42,9 +42,8 @@ dependencies {
     implementation("io.konform:konform-jvm:0.2.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.2.6.RELEASE")
-    implementation("org.springframework.security:spring-security-jwt:1.1.0.RELEASE")
-    implementation("com.nimbusds:nimbus-jose-jwt:8.16")
-    implementation ("com.auth0:java-jwt:3.10.3")
+    implementation("org.springframework.security:spring-security-oauth2-jose:5.2.5.RELEASE")
+    implementation("com.auth0:java-jwt:3.10.3")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")

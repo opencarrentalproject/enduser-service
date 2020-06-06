@@ -1,0 +1,7 @@
+server:
+  port: 8081
+security:
+  oauth2:
+    resource:
+      jwk:
+        key-set-uri: http://localhost:8090/.well-known/jwks.json

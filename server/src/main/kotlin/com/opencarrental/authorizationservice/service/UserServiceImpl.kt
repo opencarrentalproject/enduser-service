@@ -7,11 +7,11 @@ import com.opencarrental.authorizationservice.exception.InvalidEndUserException
 import com.opencarrental.authorizationservice.exception.NotUniqueUserException
 import com.opencarrental.authorizationservice.repository.UserRepository
 import org.springframework.data.repository.findByIdOrNull
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.User
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.util.*
 
 
 @Service("customUserDetailService")
@@ -66,7 +66,9 @@ class UserServiceImpl(val repository: UserRepository, val validationService: Use
         val endUser = repository.findFirstByEmail(email) ?: throw RuntimeException("User not found")
 
         // TODO apply authority after implementing roles
-        return User(endUser.email, endUser.password, Collections.emptyList())
+        return User(endUser.email, endUser.password, listOf(
+                SimpleGrantedAuthority("customer")
+        ))
     }
 
 }

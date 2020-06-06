@@ -1,6 +1,11 @@
 package com.opencarrental.authorizationservice.configuration
+
+
+import com.nimbusds.jose.JWSAlgorithm
 import com.nimbusds.jose.jwk.JWKSet
+import com.nimbusds.jose.jwk.KeyUse
 import com.nimbusds.jose.jwk.RSAKey
+import com.opencarrental.authorizationservice.security.JwtCustomHeadersAccessTokenConverter
 import com.opencarrental.authorizationservice.security.PkceAuthorizationCodeServices
 import com.opencarrental.authorizationservice.security.PkceAuthorizationCodeTokenGranter
 import org.springframework.beans.factory.annotation.Qualifier
@@ -45,6 +50,8 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
                                        @Value("\${public_client.refresh_token_validity_period}") val refreshTokenValidity: Int,
                                        @Value("\${public_client.redirect_urls}") val redirectUrls: String) : AuthorizationServerConfigurerAdapter() {
 
+    private val JWK_KID = "auth-key-id"
+
     override fun configure(security: AuthorizationServerSecurityConfigurer?) {
         security!!.allowFormAuthenticationForClients()
     }
@@ -79,9 +86,10 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
 
     @Bean
     fun jwtAccessTokenConverter(): JwtAccessTokenConverter {
-        val converter = JwtAccessTokenConverter()
-        converter.setKeyPair(keyPair())
-        return converter
+        val customHeaders: Map<String, String> = mapOf(
+                "kid" to JWK_KID
+        )
+        return JwtCustomHeadersAccessTokenConverter(customHeaders, keyPair())
     }
 
     @Bean
@@ -90,7 +98,11 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
     @Bean
     fun jwkSet(): JWKSet? {
         val publicKey = keyPair().public as RSAPublicKey
-        val key: RSAKey = RSAKey.Builder(publicKey).build()
+        val key: RSAKey = RSAKey
+                .Builder(publicKey)
+                .keyUse(KeyUse.SIGNATURE)
+                .algorithm(JWSAlgorithm.RS256)
+                .keyID(JWK_KID).build()
         return JWKSet(key)
     }
 
