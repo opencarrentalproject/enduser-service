@@ -14,5 +14,5 @@ class SecuredResourceController {
 
 
     @PostMapping("/{id}")
-    fun writeItem(principal: Principal, @PathVariable("id") id: String, @RequestBody text: String): Item = Item(id, """$text updated by ${principal.name}""")
+    fun writeItem(principal: Principal, @PathVariable("id") id: String, @RequestBody text: String): Item = Item(id, """$text submitted by ${principal.name}""")
 }

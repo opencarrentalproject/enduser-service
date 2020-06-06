@@ -11,13 +11,17 @@ import org.springframework.security.oauth2.provider.error.OAuth2AccessDeniedHand
 @EnableResourceServer
 class SecurityConfig() : ResourceServerConfigurerAdapter() {
 
+    /**
+     * Here the post request can only be access if the provided jwt token has both write scope and admin authority.
+     * For get operation read scope is enough.
+     */
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http.requestMatchers().antMatchers("/items/**")
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/items/**").hasAuthority("admin")
-                .antMatchers(HttpMethod.GET, "/items/**").access("#oauth2.hasScope('read') and hasAuthority('member')")
+                .antMatchers(HttpMethod.POST, "/items/**").access("#oauth2.hasScope('write') and hasAuthority('admin')")
+                .antMatchers(HttpMethod.GET, "/items/**").access("#oauth2.hasScope('read')")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().accessDeniedHandler(OAuth2AccessDeniedHandler());
