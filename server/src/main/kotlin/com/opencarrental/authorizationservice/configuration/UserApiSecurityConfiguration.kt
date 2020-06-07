@@ -40,7 +40,7 @@ class UserApiSecurityConfiguration(@Autowired val passwordEncoder: PasswordEncod
                 .and()
                 .csrf().disable()
                 .requestMatchers()
-                .antMatchers("/.well-known/jwks.json", "/admin/login", "/users/**")
+                .antMatchers("/.well-known/jwks.json", "/admin/login", "/users/**", "/roles/**")
                 .and()
                 .authorizeRequests()
                 .antMatchers("/.well-known/jwks.json", "/admin/login").permitAll()

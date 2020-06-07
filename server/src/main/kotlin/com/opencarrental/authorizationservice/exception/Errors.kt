@@ -7,3 +7,5 @@ data class InvalidEndUserException(val errorDetails: List<ErrorDetail>) : Runtim
 data class NotUniqueUserException(val errorDetails: List<ErrorDetail>) : RuntimeException()
 
 data class EndUserNotFoundException(override val message: String) : RuntimeException(message)
+
+data class RoleNotFoundException(override val message: String) : RuntimeException(message)

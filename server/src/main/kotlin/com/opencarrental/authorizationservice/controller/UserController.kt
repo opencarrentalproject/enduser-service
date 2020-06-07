@@ -16,18 +16,12 @@ import java.util.stream.Collectors
 @RequestMapping("/users")
 class UserController(val service: UserService) {
 
-    @GetMapping("", produces = ["application/hal+json"])
+    @GetMapping(produces = ["application/hal+json"])
     fun listUsers(): CollectionModel<UserResource> {
         val users = service.list()
         val result = users.stream()
                 .map {
-
-                    val selfLink: Link = linkTo(UserController::class.java).slash(it.id).withSelfRel()
-                    val userResource: UserResource = UserResource(
-                            id = it.id!!, firstName = it.firstName, lastName = it.lastName, email = it.email,
-                            registeredTime = it.registeredTime, loggedInTime = it.loggedInTime, verified = it.verified)
-
-                    userResource.add(selfLink)
+                    mapToResource(it)
                 }.collect(Collectors.toList())
         val link: Link = linkTo(UserController::class.java).withSelfRel()
         return CollectionModel<UserResource>(result, link)
@@ -36,7 +30,7 @@ class UserController(val service: UserService) {
 
     @GetMapping("/{userId}")
     fun retrieveUser(@PathVariable userId: String) = service.retrieve(userId)
-            ?: throw EndUserNotFoundException("User does not exists")
+            ?: throw EndUserNotFoundException("User does not exist")
 
     @PostMapping("")
     @ResponseStatus(HttpStatus.CREATED)
