@@ -1,5 +1,6 @@
 package com.opencarrental.authorizationservice
 
+import org.apache.http.entity.ContentType
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -9,6 +10,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.http.HttpEntity
+import org.springframework.http.client.ClientHttpRequestInterceptor
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.test.context.ContextConfiguration
 import org.testcontainers.containers.GenericContainer
@@ -42,7 +44,12 @@ abstract class AbstractIntegrationTest(@Autowired val testRestTemplate: TestRest
         val response = testRestTemplate.postForEntity("/admin/login", tokenRequest, String::class.java)
         token = response.body
                 ?: throw RuntimeException("Failed to retrieve token.Check the security configuration")
-        println(token)
+
+        testRestTemplate.restTemplate.interceptors.add(ClientHttpRequestInterceptor { request, body, execution ->
+            request.headers.set("Authorization", """Bearer $token""");
+            request.headers.set("Content-Type", ContentType.APPLICATION_JSON.mimeType);
+            execution.execute(request, body)
+        })
     }
 
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -63,5 +70,13 @@ abstract class AbstractIntegrationTest(@Autowired val testRestTemplate: TestRest
     internal data class Credentials(
             val username: String,
             val password: String
+    )
+
+    internal data class Links(
+            val self: Link
+    )
+
+    internal data class Link(
+            val href: String
     )
 }

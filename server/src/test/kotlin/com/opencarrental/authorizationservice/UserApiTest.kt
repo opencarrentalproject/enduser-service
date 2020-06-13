@@ -1,35 +1,20 @@
 package com.opencarrental.authorizationservice
 
 import com.google.gson.Gson
-import org.apache.http.entity.ContentType
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
-import org.springframework.http.client.ClientHttpRequestInterceptor
 import java.time.LocalDateTime
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class AuthorizationserviceApplicationTests(@Autowired val dataProvider: DataProvider, @Autowired restTemplate: TestRestTemplate) : AbstractIntegrationTest(restTemplate) {
+class UserApiTest(@Autowired val dataProvider: DataProvider, @Autowired restTemplate: TestRestTemplate) : AbstractIntegrationTest(restTemplate) {
 
     val gson = Gson()
-
-    @BeforeEach
-    override fun setup() {
-        super.setup()
-        testRestTemplate.restTemplate.interceptors.add(ClientHttpRequestInterceptor { request, body, execution ->
-            request.headers.set("Authorization", """Bearer $token""");
-            request.headers.set("Content-Type", ContentType.APPLICATION_JSON.mimeType);
-            execution.execute(request, body)
-        }
-        )
-    }
 
     @Test
     fun `request to create user must return success`() {
@@ -190,14 +175,6 @@ class AuthorizationserviceApplicationTests(@Autowired val dataProvider: DataProv
     internal data class ErrorDetail(
             val field: String,
             val message: String
-    )
-
-    internal data class Links(
-            val self: Link
-    )
-
-    internal data class Link(
-            val href: String
     )
 }
 

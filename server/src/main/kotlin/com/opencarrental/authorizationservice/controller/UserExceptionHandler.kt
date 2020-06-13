@@ -3,6 +3,7 @@ package com.opencarrental.authorizationservice.controller
 import com.opencarrental.authorizationservice.exception.EndUserNotFoundException
 import com.opencarrental.authorizationservice.exception.InvalidEndUserException
 import com.opencarrental.authorizationservice.exception.NotUniqueUserException
+import com.opencarrental.authorizationservice.exception.RoleNotFoundException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -28,8 +29,8 @@ class UserExceptionHandler : ResponseEntityExceptionHandler() {
                 HttpHeaders(), HttpStatus.CONFLICT, request!!)
     }
 
-    @ExceptionHandler(value = [EndUserNotFoundException::class])
-    protected fun handleNotFound(ex: EndUserNotFoundException, request: WebRequest?): ResponseEntity<Any?>? {
+    @ExceptionHandler(value = [EndUserNotFoundException::class, RoleNotFoundException::class])
+    protected fun handleNotFound(ex: Exception, request: WebRequest?): ResponseEntity<Any?>? {
         return handleExceptionInternal(ex, ex.message, HttpHeaders(), HttpStatus.NOT_FOUND, request!!)
     }
 

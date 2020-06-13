@@ -25,7 +25,7 @@ docker-compose up
 
 #### Road Map
 
-Currently this project uses the deprecated spring-security-oauth module for
+Currently, this project uses the deprecated spring-security-oauth module for
 authorization server. There is a spring-authorization-server project in experimental
 phase. If this project will come out of experimental stage this repo will be migrated to
 use the new authorization server
