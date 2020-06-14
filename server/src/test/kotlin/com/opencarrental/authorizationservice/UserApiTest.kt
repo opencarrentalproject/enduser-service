@@ -149,7 +149,8 @@ class UserApiTest(@Autowired val dataProvider: DataProvider, @Autowired restTemp
     internal data class UpdateUserRequest(
             val firstName: String,
             val lastName: String,
-            val email: String
+            val email: String,
+            val roles: Set<Role> = setOf()
     )
 
     internal data class EndUserListResource(
@@ -175,6 +176,11 @@ class UserApiTest(@Autowired val dataProvider: DataProvider, @Autowired restTemp
     internal data class ErrorDetail(
             val field: String,
             val message: String
+    )
+
+    internal data class Role(
+            val id: String,
+            val name: String
     )
 }
 

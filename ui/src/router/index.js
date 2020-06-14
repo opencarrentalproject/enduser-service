@@ -37,6 +37,14 @@ const routes = [
         meta: {
             requireAuth: true
         }
+    },
+    {
+        path: '/roles',
+        name: 'roles',
+        component: () => import('../components/Roles.vue'),
+        meta: {
+            requireAuth: true
+        }
     }
 ]
 

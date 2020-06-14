@@ -19,6 +19,3 @@ public_client:
   access_token_validity_period: 3600
   refresh_token_validity_period: 86400
 
-
-
-

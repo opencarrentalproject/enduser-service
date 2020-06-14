@@ -36,7 +36,8 @@ http.interceptors.response.use(
                     //todo show error messagee
                     break;
                 case 401:
-                    console.log("got 401");
+                    localStorage.removeItem('token')
+                    router.push('/login')
                     break;
                 case 403:
                     router.replace({

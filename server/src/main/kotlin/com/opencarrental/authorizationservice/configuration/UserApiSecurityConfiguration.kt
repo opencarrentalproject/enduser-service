@@ -46,12 +46,11 @@ class UserApiSecurityConfiguration(@Autowired val passwordEncoder: PasswordEncod
                 .antMatchers("/.well-known/jwks.json", "/admin/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
+                .exceptionHandling().accessDeniedHandler(accessDeniedHandler()).authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                .and()
                 .addFilter(JWTAuthenticationFilter(authenticationManagerBean(), jwtSecret, jwtTokenValidity, "/admin/login"))
                 .addFilter(JWTAuthorizationFilter(authenticationManagerBean(), jwtSecret))
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .exceptionHandling().authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED));
-
     }
 
     @Bean("adminAuthenticationManager")
@@ -59,6 +58,9 @@ class UserApiSecurityConfiguration(@Autowired val passwordEncoder: PasswordEncod
     override fun authenticationManagerBean(): AuthenticationManager {
         return super.authenticationManagerBean()
     }
+
+    @Bean
+    fun accessDeniedHandler() = ApiAccessDeniedExceptionHandler()
 
     override fun configure(auth: AuthenticationManagerBuilder?) {
         auth!!.userDetailsService(adminUserDetailsService())

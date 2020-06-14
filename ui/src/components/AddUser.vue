@@ -71,7 +71,7 @@
         </div>
 
         <div v-else>
-            <h4>User successfuly created</h4>
+            <h4>User successfully created</h4>
             <button class="btn btn-success" @click="newUser">Add</button>
         </div>
     </div>
@@ -80,7 +80,7 @@
 <script>
     import UserService from "../services/UserService";
     export default {
-        name: "add-tutorial",
+        name: "add-user",
         data() {
             return {
                 user: {

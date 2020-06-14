@@ -2,6 +2,7 @@ package com.opencarrental.authorizationservice.security
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm.HMAC512
+import com.auth0.jwt.exceptions.JWTVerificationException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
@@ -30,8 +31,14 @@ class JWTAuthorizationFilter(@Qualifier("adminAuthenticationManager") authManage
             chain.doFilter(req, res)
             return
         }
-        val authentication = getAuthentication(req)
-        SecurityContextHolder.getContext().authentication = authentication
+        try {
+            val authentication = getAuthentication(req)
+            SecurityContextHolder.getContext().authentication = authentication
+        } catch (ex: JWTVerificationException) {
+            log.warn("Jwt verification failed")
+            // Setting authentication to null so that spring security can recognized this as authorized request
+            SecurityContextHolder.getContext().authentication = null
+        }
         chain.doFilter(req, res)
     }
 

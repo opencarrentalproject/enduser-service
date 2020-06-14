@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse
 
 class JWTAuthenticationFilter(private val adminAuthenticationManager: AuthenticationManager,
                               private val jwtSecret: String,
-                              private val jwtTokenValidity: Long, private val filterUrl: String) : UsernamePasswordAuthenticationFilter() {
+                              private val jwtTokenValidity: Long, filterUrl: String) : UsernamePasswordAuthenticationFilter() {
 
     init {
         this.setFilterProcessesUrl(filterUrl)

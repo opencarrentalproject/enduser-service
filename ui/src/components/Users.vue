@@ -35,9 +35,6 @@
                 </tr>
                 </tbody>
             </table>
-            <button class="m-3 btn btn-sm btn-danger" @click="removeUser">
-                Remove All
-            </button>
         </div>
     </div>
 </template>
@@ -70,11 +67,6 @@
                 this.retrieveUsers();
                 this.currentUser = null;
                 this.currentIndex = -1;
-            },
-
-            setActiveUser(user, index) {
-                this.currentUser = user;
-                this.currentIndex = index;
             },
 
             removeUser(user) {

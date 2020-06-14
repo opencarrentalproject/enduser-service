@@ -7,6 +7,9 @@
           <a href="/users" class="nav-link">Users</a>
         </li>
         <li class="nav-item">
+          <a href="/roles" class="nav-link">Roles</a>
+        </li>
+        <li class="nav-item">
           <a href="/add" class="nav-link">Add</a>
         </li>
       </div>

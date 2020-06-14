@@ -38,7 +38,8 @@ class UserServiceImpl(val repository: UserRepository, val validationService: Use
                 ?: throw EndUserNotFoundException("User does not exist")
         val updatedUser = persistedUser.copy(firstName = userEdit.firstName
                 ?: persistedUser.firstName, lastName = userEdit.lastName
-                ?: persistedUser.lastName, email = userEdit.email ?: persistedUser.email)
+                ?: persistedUser.lastName, email = userEdit.email ?: persistedUser.email,
+                roles = userEdit.roles)
         validateEndUser(updatedUser)
         return repository.save(updatedUser)
     }

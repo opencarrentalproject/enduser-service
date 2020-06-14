@@ -52,7 +52,7 @@ class UserController(val service: UserService) {
     private fun mapToResource(user: User): UserResource {
         val userResource: UserResource = UserResource(
                 id = user.id!!, firstName = user.firstName, lastName = user.lastName, email = user.email,
-                registeredTime = user.registeredTime, loggedInTime = user.loggedInTime, verified = user.verified)
+                registeredTime = user.registeredTime, loggedInTime = user.loggedInTime, verified = user.verified, roles = user.roles)
         val selfLink: Link = linkTo(UserController::class.java).slash(userResource.id).withSelfRel()
         userResource.add(selfLink)
         return userResource
