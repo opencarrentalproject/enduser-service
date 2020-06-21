@@ -20,15 +20,18 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-
+    - uses: actions/setup-java@v1
+      with:
+        java-version: 8
     # Runs a single command using the runners shell
-    - name: Build and test
-      run: |
+    - name: Change to server directory
+      run: | 
         cd server
-        ./gradlew test
-    - name: Package
-        ./gradlew assemble 
-    - name: Build and push Docker images
+    - name: Build and test
+    - uses: eskatos/gradle-command-action@v1
+      with:
+        arguments: test assemble
+    - name: Push Docker images
       uses: docker/build-push-action@v1.1.0
       with:
         # Docker repository to tag the image with
