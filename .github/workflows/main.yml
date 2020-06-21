@@ -25,14 +25,14 @@ jobs:
         java-version: 8
     # Runs a single command using the runners shell
     - name: Change to server directory
-      run: | 
+    - run: | 
         cd server
     - name: Build and test
     - uses: eskatos/gradle-command-action@v1
       with:
         arguments: test assemble
     - name: Push Docker images
-      uses: docker/build-push-action@v1.1.0
+    - uses: docker/build-push-action@v1.1.0
       with:
         # Docker repository to tag the image with
         repository: publiccarrental/authorization-service
