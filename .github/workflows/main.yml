@@ -32,9 +32,9 @@ jobs:
         # Docker repository to tag the image with
         repository: publiccarrental/authorization-service
         # Path to the build context
-        path: $GITHUB_WORKSPACE/server
+        path: ${GITHUB_WORKSPACE}/server
         # Path to the Dockerfile (Default is '{path}/Dockerfile')
-        dockerfile: $GITHUB_WORKSPACE/server/docker/Dockerfile
+        dockerfile: ${GITHUB_WORKSPACE}/server/docker/Dockerfile
         # Always attempt to pull a newer version of the image
         always_pull: true
         push: true     
