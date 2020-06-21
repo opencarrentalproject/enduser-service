@@ -37,4 +37,5 @@ jobs:
         dockerfile: ./server/docker/Dockerfile
         # Always attempt to pull a newer version of the image
         always_pull: true
+        tags: latest
         push: true     
