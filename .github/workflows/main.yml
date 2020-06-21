@@ -31,15 +31,5 @@ jobs:
     - uses: eskatos/gradle-command-action@v1
       with:
         arguments: test assemble
-    - name: Push Docker images
-    - uses: docker/build-push-action@v1.1.0
-      with:
-        # Docker repository to tag the image with
-        repository: publiccarrental/authorization-service
-        # Path to the build context
-        # Path to the Dockerfile (Default is '{path}/Dockerfile')
-        dockerfile: '{path}/docker/Dockerfile'
-        # Always attempt to pull a newer version of the image
-        always_pull: true
-        push: true
+ 
 
