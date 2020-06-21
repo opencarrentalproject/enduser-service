@@ -33,7 +33,7 @@ jobs:
         repository: publiccarrental/authorization-service
         # Path to the build context
         # Path to the Dockerfile (Default is '{path}/Dockerfile')
-        dockerfile: '{path}/docker/Dockerfile'
+        dockerfile: ./docker/Dockerfile
         # Always attempt to pull a newer version of the image
         always_pull: true
         push: true     
