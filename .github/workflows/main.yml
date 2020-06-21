@@ -23,10 +23,9 @@ jobs:
     - uses: actions/setup-java@v1
       with:
         java-version: 8
-    - run: | 
-        cd server
     - uses: eskatos/gradle-command-action@v1
       with:
+        build-root-directory: ./server
         arguments: test assemble
  
 
