@@ -23,7 +23,7 @@ class PkceProtectedAuthentication {
 
     fun getAuthentication(codeVerifier: String?): OAuth2Authentication? {
         return when {
-            codeChallengeMethod === CodeChallengeMethod.NONE -> authentication
+            codeChallengeMethod === CodeChallengeMethod.NONE -> if (codeVerifier === codeChallenge) authentication else null
             codeChallengeMethod.transform(codeVerifier!!) == codeChallenge -> authentication
             else -> throw InvalidGrantException("Invalid code verifier.")
         }
