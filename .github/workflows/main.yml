@@ -30,9 +30,10 @@ jobs:
     - uses: docker/build-push-action@v1.1.0
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        password: ${{ secrets.GITHUB_TOKEN }}
         # Docker repository to tag the image with
-        repository: publiccarrental/authorization-service
+        repository: opencarrentalproject/authorization-service
+        registry: docker.pkg.github.com 
         # Path to the build context
         path: ./server
         # Path to the Dockerfile (Default is '{path}/Dockerfile')
@@ -40,9 +41,4 @@ jobs:
         # Always attempt to pull a newer version of the image
         always_pull: true
         tags: latest
-        push: true  
-    - name: Push package
-      run: |
-        cat ~/GH_TOKEN.txt | docker login docker.pkg.github.com -u fgakk --password-stdin
-        docker tag authorization-service docker.pkg.github.com/opencarrentalproject/authorization-service/authorization-service:latest
-        docker push docker.pkg.github.com/opencarrentalproject/authorization-service/authorization-service:latest
+        push: true
