@@ -40,4 +40,9 @@ jobs:
         # Always attempt to pull a newer version of the image
         always_pull: true
         tags: latest
-        push: true     
+        push: true  
+    - name: Push package
+      run: |
+        cat ~/GH_TOKEN.txt | docker login docker.pkg.github.com -u fgakk --password-stdin
+        docker tag authorization-service docker.pkg.github.com/opencarrentalproject/authorization-service/authorization-service:latest
+        docker push docker.pkg.github.com/opencarrentalproject/authorization-service/authorization-service:latest
