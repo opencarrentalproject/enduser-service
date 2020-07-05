@@ -1,3 +1,5 @@
+![CI](https://github.com/opencarrentalproject/authorization-service/workflows/CI/badge.svg?branch=master)
+
 # Authorization Service
 Component responsible for managing users, providing registration and login. Supports token based authentication
 
