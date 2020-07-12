@@ -14,8 +14,10 @@ admin:
   jwt_token_validity_period: 864000000
 public_client:
   client_id: public
-  client_secret: ui_secret
   redirect_urls: http://localhost:8081
   access_token_validity_period: 3600
   refresh_token_validity_period: 86400
+private_client:
+  client_id: private
+  client_secret: changeme
 

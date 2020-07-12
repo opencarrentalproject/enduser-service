@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer
+import org.springframework.security.oauth2.core.AuthorizationGrantType
 import org.springframework.security.oauth2.provider.ClientDetailsService
 import org.springframework.security.oauth2.provider.CompositeTokenGranter
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory
@@ -45,10 +46,11 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
                                        @Qualifier("clientAuthenticationManager") val authenticationManager: AuthenticationManager,
                                        val clientDetailsService: ClientDetailsService,
                                        @Value("\${public_client.client_id}") val public: String,
-                                       @Value("\${public_client.client_secret}") val publicSecret: String,
                                        @Value("\${public_client.access_token_validity_period}") val accessTokenValidity: Int,
                                        @Value("\${public_client.refresh_token_validity_period}") val refreshTokenValidity: Int,
-                                       @Value("\${public_client.redirect_urls}") val redirectUrls: String) : AuthorizationServerConfigurerAdapter() {
+                                       @Value("\${public_client.redirect_urls}") val redirectUrls: String,
+                                       @Value("\${private_client.client_id}") val private: String,
+                                       @Value("\${private_client.client_secret}") val privateClientSecret: String) : AuthorizationServerConfigurerAdapter() {
 
     private val JWK_KID = "auth-key-id"
 
@@ -59,14 +61,23 @@ class AuthorizationServerConfiguration(val passwordEncoder: PasswordEncoder,
 
     override fun configure(clients: ClientDetailsServiceConfigurer?) {
         clients!!.inMemory()
-                .withClient(public)
+                .withClient(public) // Configuration for internet facing public client
                 .secret("{noop}")
-                .authorizedGrantTypes("authorization_code")
+                .authorizedGrantTypes(AuthorizationGrantType.AUTHORIZATION_CODE.value,
+                        AuthorizationGrantType.REFRESH_TOKEN.value)
                 .redirectUris(redirectUrls)
                 .autoApprove(true)
                 .scopes("read")
                 .accessTokenValiditySeconds(accessTokenValidity)
                 .refreshTokenValiditySeconds(refreshTokenValidity)
+                .and() // Configuration for internal service client
+                .withClient(private)
+                .secret(privateClientSecret)
+                .authorizedGrantTypes(AuthorizationGrantType.CLIENT_CREDENTIALS.value,
+                        AuthorizationGrantType.REFRESH_TOKEN.value)
+                .accessTokenValiditySeconds(accessTokenValidity)
+                .refreshTokenValiditySeconds(refreshTokenValidity)
+
     }
 
     override fun configure(endpoints: AuthorizationServerEndpointsConfigurer?) {
