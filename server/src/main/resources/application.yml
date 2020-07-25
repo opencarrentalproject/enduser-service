@@ -12,6 +12,7 @@ admin:
   password: admin
   jwt_secret: jwtSecret
   jwt_token_validity_period: 864000000
+  allowed_origins: http://localhost:8080, http://localhost
 public_client:
   client_id: public
   redirect_urls: http://localhost:8081

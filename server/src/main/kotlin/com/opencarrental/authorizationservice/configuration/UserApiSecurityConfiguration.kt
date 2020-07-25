@@ -32,7 +32,8 @@ class UserApiSecurityConfiguration(@Autowired val passwordEncoder: PasswordEncod
                                    @Value("\${admin.username}") val adminUserName: String,
                                    @Value("\${admin.password}") val adminPassword: String,
                                    @Value("\${admin.jwt_secret}") val jwtSecret: String,
-                                   @Value("\${admin.jwt_token_validity_period}") val jwtTokenValidity: Long) : WebSecurityConfigurerAdapter() {
+                                   @Value("\${admin.jwt_token_validity_period}") val jwtTokenValidity: Long,
+                                   @Value("\${admin.allowed_origins}") val allowedOrigins: List<String>) : WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity?) {
 
@@ -81,7 +82,7 @@ class UserApiSecurityConfiguration(@Autowired val passwordEncoder: PasswordEncod
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource? {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:8080")
+        configuration.allowedOrigins = allowedOrigins
         configuration.allowedMethods = listOf("GET", "POST", "PATCH", "DELETE", "OPTIONS")
         configuration.applyPermitDefaultValues();
         val source = UrlBasedCorsConfigurationSource()

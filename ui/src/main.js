@@ -11,7 +11,6 @@ http.defaults.timeout = 5000
 http.interceptors.request.use(
     config => {
         const token = localStorage.getItem('token');
-        console.log("intercepting request");
         if (token) {
             config.headers.common['Authorization'] = "Bearer " + token;
         }
