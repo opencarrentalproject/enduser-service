@@ -43,13 +43,15 @@ jobs:
         always_pull: true
         tags: latest
         push: true
-    - name: Build ui 
+    - name: Setup node
       uses: actions/setup-node@v1
       with:
         node-version: 14.x
-    - run: cd ui
-    - run: npm install
-    - run: npm run build
+    - name: Build ui 
+      run: | 
+        cd ui
+        npm install
+        npm run build      
     - name: Push ui docker image  
       uses: docker/build-push-action@v1.1.0
       with:
