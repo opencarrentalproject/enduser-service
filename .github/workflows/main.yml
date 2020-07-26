@@ -23,10 +23,11 @@ jobs:
     - uses: actions/checkout@v2
 
     # Runs a single command using the runners shell
-    - name: Build and test
+    - name: Build and test server
       run: |
         cd server
         ./gradlew test assemble
+    - name: Push server docker image    
     - uses: docker/build-push-action@v1.1.0
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
@@ -42,3 +43,26 @@ jobs:
         always_pull: true
         tags: latest
         push: true
+    - name: Build ui 
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14.x
+    - run: cd ui
+    - run: npm install
+    - run: npm run build
+    - name: Push ui docker image  
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        # Docker repository to tag the image with
+        repository: opencarrentalproject/authorization-service/authorization-ui
+        registry: docker.pkg.github.com 
+        # Path to the build context
+        path: ./ui
+        # Path to the Dockerfile (Default is '{path}/Dockerfile')
+        dockerfile: ./ui/docker/Dockerfile
+        # Always attempt to pull a newer version of the image
+        always_pull: true
+        tags: latest
+        push: true
+    
