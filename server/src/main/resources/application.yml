@@ -13,11 +13,13 @@ admin:
   jwt_secret: jwtSecret
   jwt_token_validity_period: 864000000
   allowed_origins: http://localhost:8080, http://localhost
+  ## TODO make allowed origins extendable
 public_client:
   client_id: public
   redirect_urls: http://localhost:8081
   access_token_validity_period: 3600
   refresh_token_validity_period: 86400
+  ## TODO make redirect_urls configurable
 private_client:
   client_id: private
   client_secret: changeme

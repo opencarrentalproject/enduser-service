@@ -4,19 +4,17 @@ services:
     image: mongo:bionic
     container_name: "mongodb"
     ports:
-      - 27017:27017
+      - 27017
   auth-server:
-    build:
-      context: ../server
-      dockerfile: docker/Dockerfile
+    image: docker.pkg.github.com/opencarrentalproject/authorization-service/authorization-service:latest
+    container_name: auth-server
     ports:
       - 8090:8090
     links:
       - mongodb
   auth-ui:
-    build:
-      context: ../ui
-      dockerfile: docker/Dockerfile
+    image: docker.pkg.github.com/opencarrentalproject/authorization-service/authorization-ui:latest
+    container_name: auth-ui
     ports:
       - 80:80
     links:
